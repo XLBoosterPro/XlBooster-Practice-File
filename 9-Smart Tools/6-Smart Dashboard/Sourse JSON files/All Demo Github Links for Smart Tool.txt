@@ -1,0 +1,52 @@
+1. Clustered Column Chart 
+
+https://dataanalystsachin.github.io/Excel-Charts/Chart_Column_20260205_114901.html
+
+https://xlboosterpro.github.io/Public-insight/Chart_Column_20260205_114932.html
+
+
+2nd Clustered Bar Chart
+
+https://dataanalystsachin.github.io/Excel-Charts/Chart_Bar_20260205_115305.html
+
+https://xlboosterpro.github.io/Public-insight/Chart_Bar_20260205_115333.html
+
+3rd Line Chart
+
+https://dataanalystsachin.github.io/Excel-Charts/Chart_Line_20260205_115544.html
+
+https://xlboosterpro.github.io/Public-insight/Chart_Line_20260205_115636.html
+
+4th Area Chart
+
+https://dataanalystsachin.github.io/Excel-Charts/Chart_Area_20260205_115852.html
+
+https://xlboosterpro.github.io/Public-insight/Chart_Area_20260205_115916.html
+
+5th Pie Chart
+
+https://dataanalystsachin.github.io/Excel-Charts/Chart_Pie_20260205_120114.html
+
+https://xlboosterpro.github.io/Public-insight/Chart_Pie_20260205_120134.html
+
+6th Radar Chart
+
+https://dataanalystsachin.github.io/Excel-Charts/Chart_Radar_20260205_120400.html
+
+https://xlboosterpro.github.io/Public-insight/Chart_Radar_20260205_120426.html
+
+
+Smart Dashboard link 
+
+https://dataanalystsachin.github.io/Excel-Charts/XLBooster.html_20260205_130710.html
+
+https://xlboosterpro.github.io/Public-insight/XLBooster.html_20260205_130731.html
+
+Web Table link
+
+https://dataanalystsachin.github.io/Excel-Charts/XLBooster_20260205_131025.html
+
+https://xlboosterpro.github.io/Public-insight/XLBooster_20260205_131042.html
+
+
+

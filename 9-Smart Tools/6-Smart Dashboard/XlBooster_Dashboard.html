@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>XlBooster Dashboard</title>    <script src='https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'></script><link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet'><style>  :root {    --body-bg: #f3f4f6; --card-bg: #ffffff; --text-col: #1f2937;    --border-col: #e5e7eb; --shadow-col: rgba(0, 0, 0, 0.05); --header-bg: rgba(255, 255, 255, 0.95);  }  * { box-sizing: border-box; outline: none; }  body { background-color: var(--body-bg); color: var(--text-col); font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }  ::-webkit-scrollbar { width: 8px; height: 8px; }  ::-webkit-scrollbar-track { background: var(--body-bg); }  ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }  .dash-header { position: sticky; top: 0; z-index: 1000; background: var(--header-bg); backdrop-filter: blur(12px);    display: flex; flex-direction: column; border-bottom: 1px solid var(--border-col); box-shadow: 0 4px 20px var(--shadow-col); }  .header-top { display: flex; justify-content: center; align-items: center; padding: 15px 30px; width: 100%; position: relative; }  .dash-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin: 0; text-transform: uppercase;    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }  .header-actions { position: absolute; right: 30px; }  .btn-save { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3); transition: all 0.2s ease; }  .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }  .fullscreen { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 9999; background: var(--card-bg); padding: 20px; border-radius: 0 !important; margin: 0 !important; transform: none !important; }  .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; }  .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; background: #ffffff; color: #333333; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; }  .modal-title { margin-top: 0; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid var(--border-col); padding-bottom: 5px; font-weight:bold; }  .fmt-btn { display: block; width: 100%; padding: 8px; margin: 6px 0; background: #f0f0f0; border: 1px solid var(--border-col); border-radius: 4px; cursor: pointer; color: #333333; font-size: 12px; transition: 0.2s; }  .fmt-btn:hover { background: #e0e0e0; }  .close-btn { margin-top: 10px; background: transparent; border: none; color: #333333; padding: 5px; cursor: pointer; font-size: 12px; text-decoration:underline; }  .tab-nav-bar { display: flex; overflow-x: auto; width: 100%; padding: 0 20px; border-top: 1px solid var(--border-col); }  .tab-btn { background: transparent; border: none; color: var(--text-col); padding: 14px 24px; cursor: pointer; font-size: 14px; font-weight: 500; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.2s; }  .tab-btn:hover { background-color: #f3f4f6; }  .tab-btn.active { border-bottom-color: #6366f1; color: #6366f1; font-weight: 700; background-color: #e0e7ff; }  .tab-content-container { padding: 20px; height: calc(100vh - 125px); width: 100%; }  .tab-pane { display: none; width: 100%; height: 100%; animation: fadeIn 0.3s ease; }  .tab-pane.active { display: block; }  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }  .full-card { width: 100%; height: 100%; background-color: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 20px var(--shadow-col); border: 1px solid var(--border-col); display: flex; flex-direction: column; overflow: hidden; }  .chart-header { padding: 18px 20px 0px 20px; font-weight: 600; font-size: 16px; text-align: center; height: 45px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-col); }  .chart-body { flex-grow: 1; position: relative; width: 100%; height: 100%; padding: 10px; overflow: hidden; }  .chart-box { width: 100%; height: 100%; }</style></head><body>    <div id='lblModal' class='modal-overlay'>        <div class='modal-box'>            <div class='modal-title'>Label Settings</div>            <button id='btnToggle' class='fmt-btn' style='font-weight:bold;' onclick="toggleLabels()">Hide Labels</button>            <hr style='margin:8px 0; border:0; border-top:1px solid #e5e7eb; opacity:0.5;'>            <button class='fmt-btn' onclick="setLabelMode('raw')">Actual Value (1,200)</button>            <button class='fmt-btn' onclick="setLabelMode('auto')">Auto Format (1K, 1M)</button>            <button class='fmt-btn' onclick="setLabelMode('K')">Thousands (50K)</button>            <button class='fmt-btn' onclick="setLabelMode('M')">Millions (1.5M)</button>            <button class='close-btn' onclick="closeModal()">Close</button>        </div>    </div><div class='dash-header'>  <div class='header-top'>    <div class='dash-title'>XlBooster Dashboard</div>  </div>  <div class='tab-nav-bar' id='tabList'></div></div><div class='tab-content-container' id='tabContent'></div><script>document.getElementById('tabList').innerHTML = `<button class='tab-btn active' onclick="switchTab(event, 'pane_0', 'chart_0')">Regional Sales</button><button class='tab-btn' onclick="switchTab(event, 'pane_1', 'chart_1')">Product Sales Overview</button><button class='tab-btn' onclick="switchTab(event, 'pane_2', 'chart_2')">Monthly Sales Trends</button><button class='tab-btn' onclick="switchTab(event, 'pane_3', 'chart_3')">Traffic Growth</button><button class='tab-btn' onclick="switchTab(event, 'pane_4', 'chart_4')">Department Budget Allocation</button><button class='tab-btn' onclick="switchTab(event, 'pane_5', 'chart_5')">Skill Assessment</button>`; document.getElementById('tabContent').innerHTML = `<div id='pane_0' class='tab-pane active'>  <div class='full-card'>    <div class='chart-header' id='header_0'>Regional Sales</div>    <div class='chart-body'><div id='chart_0' class='chart-box'></div></div>  </div></div><div id='pane_1' class='tab-pane'>  <div class='full-card'>    <div class='chart-header' id='header_1'>Product Sales Overview</div>    <div class='chart-body'><div id='chart_1' class='chart-box'></div></div>  </div></div><div id='pane_2' class='tab-pane'>  <div class='full-card'>    <div class='chart-header' id='header_2'>Monthly Sales Trends</div>    <div class='chart-body'><div id='chart_2' class='chart-box'></div></div>  </div></div><div id='pane_3' class='tab-pane'>  <div class='full-card'>    <div class='chart-header' id='header_3'>Traffic Growth</div>    <div class='chart-body'><div id='chart_3' class='chart-box'></div></div>  </div></div><div id='pane_4' class='tab-pane'>  <div class='full-card'>    <div class='chart-header' id='header_4'>Department Budget Allocation</div>    <div class='chart-body'><div id='chart_4' class='chart-box'></div></div>  </div></div><div id='pane_5' class='tab-pane'>  <div class='full-card'>    <div class='chart-header' id='header_5'>Skill Assessment</div>    <div class='chart-body'><div id='chart_5' class='chart-box'></div></div>  </div></div>`;</script><script>
+var allCharts = {};
+var currentActiveChartId = '';
+var currentLabelMode = 'auto';
+var labelsVisible = true;
+var chartData_0 = {"chartName": "Chart","chartType": "clustered_column","title": "Regional Sales","config": {"theme": "light","currency": "\\u20B9","showGrid": true,"xLabel": "Quarter","yLabel": "Sales"},"labels": ["Q1","Q2","Q3","Q4"],"series": [{"name": "North","data": [12000,12000,13800,15000]},{"name": "South","data": [13800,14500,15400,16500]},{"name": "East","data": [15700,16900,13000,17500]},{"name": "West","data": [14600,11900,16000,14500]}]}
+;
+var chartData_1 = {"chartName": "Chart","chartType": "clustered_Bar","title": "Product Sales Overview","config": {"theme": "light","currency": "$","showGrid": true,"xLabel": "Sales","yLabel": "Category"},"labels": ["Electronics","Appliances","Furniture","Fashion","Sports"],"series": [{"name": "Sales 2023","data": [108000,95000,85000,72000,45000]},{"name": "Sales 2024","data": [135000,88000,82000,68000,58000]},{"name": "Sales 2025","data": [142000,98000,75000,80000,52000]}]}
+;
+var chartData_2 = {"chartName": "Chart","chartType": "line_chart","title": "Monthly Sales Trends","config": {"theme": "light","currency": "\\u20B9","showGrid": true,"xLabel": "Month","yLabel": "Sales"},"labels": ["January","February","March","April","May","June","July","August","September","October","November","December"],"series": [{"name": "Product A","data": [900000,1000000,1200000,1400000,1600000,1900000,2100000,2000000,1800000,1600000,1500000,1300000]},{"name": "Product B","data": [1400000,1600000,1900000,2200000,2500000,2900000,3200000,3100000,2800000,2500000,2300000,2000000]}]}
+;
+var chartData_3 = {"chartName": "Chart","chartType": "area_chart","title": "Traffic Growth","config": {"theme": "light","currency": "\\u20B9","showGrid": true,"xLabel": "Month","yLabel": "Traffic"},"labels": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"series": [{"name": "Paid","data": [2000,2200,3500,4000,5000,6000,6500,6400,5500,4500,3500,2500]},{"name": "Organic","data": [4000,4200,4500,6000,7000,8000,8500,8400,7500,6500,7500,8000]}]}
+;
+var chartData_4 = {"chartName":"Chart","chartType":"pie_chart","title":"Department Budget Allocation","settings":{"colorTheme":"light","currency":"$","legendPos":"center top","fontFamily":"Arial"},"labels":["Marketing","IT Services","Production","Logistics","Admin Support"],"series":[{"name":"Budget","data":[13500,6500,59000,3700,2600]}]}
+;
+var chartData_5 = {"chartName":"Chart","chartType":"radar_chart","title":"Skill Assessment","settings":{"colorTheme":"light","legendPos":"center top","fontFamily":"Arial"},"labels":["Problem Solving","Communication","Technical Proficiency","Adaptability","Time Management"],"series":[{"name":"Employee A","data":[8,9,7,9,8]},{"name":"Employee B","data":[5,7,5,6,8]}]}
+;
+
+var isDark = false;
+var textColor = '#1f2937';
+var gridColor = '#f3f4f6';
+var borderColor = '#e5e7eb';
+var axisColor = '#333333';
+var containerBg = '#ffffff';
+var colorsLight = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4'];
+var colorsDark = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4'];
+var colorsVintage = ['#d87c7c','#919e8b','#d7ab82','#6e7074','#61a0a8','#efa18d','#787464','#cc7e63','#724e58','#4b565b'];
+var colorsRadar = ['#5470c6','#91cc75','#fac858','#ee6666','#73c0de','#3ba272','#fc8452','#9a60b4','#ea7ccc'];
+var colorsLine = ['#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae'];
+var colorsLineDark = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#f7fff7', '#ff9f1c'];
+var dataZoomOpts = '';
+if(isDark) {
+  dataZoomOpts = { backgroundColor: '#2d2d2d', borderColor: '#444', handleStyle: { color: '#5470c6' }, textStyle: { color: '#cccccc' } };
+} else { dataZoomOpts = {}; }
+var iconSave = 'path://M15,1H3C1.9,1,1,1.9,1,3v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5L15,1z M9,17H5v-5h4V17z M15,17h-4v-5H5v5H3V3h2v4h8V3h1.2L17,5.8V17H15z';
+var iconFull = 'path://M5,5h5V3H3v7h2V5z M14,3v2h5v5h2V3H14z M19,19h-5v2h7v-7h-2V19z M5,14H3v7h7v-2H5V14z';
+var iconLabel = 'path://M20,2H4C2.9,2,2,2.9,2,4v18l4-4h14c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z M11,12H9v-2h2V12z M11,9H9V7h2V9z M11,6H9V4h2V6z';
+var iconImage = 'path://M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M5,19V5h14v14H5z M13.5,13.5l-2.5,3l-1.5-2l-2.5,3h9L13.5,13.5z';
+function openLabelModal(chartId) {
+   currentActiveChartId = chartId;
+   document.getElementById('lblModal').style.display = 'block';
+   updateToggleText();
+}
+function closeModal() {
+   document.getElementById('lblModal').style.display = 'none';
+}
+function updateToggleText() {
+   var btn = document.getElementById('btnToggle');
+   if(labelsVisible) { btn.innerText = 'Hide Labels'; btn.style.opacity = '1'; } 
+   else { btn.innerText = 'Show Labels'; btn.style.opacity = '0.7'; }
+}
+function toggleLabels() {
+   labelsVisible = !labelsVisible;
+   updateToggleText();
+   refreshLabels();
+}
+function setLabelMode(mode) {
+   currentLabelMode = mode;
+   labelsVisible = true;
+   updateToggleText();
+   refreshLabels();
+   closeModal();
+}
+function refreshLabels() {
+   if(!currentActiveChartId || !allCharts[currentActiveChartId]) return;
+   var chartObj = allCharts[currentActiveChartId];
+   var myChart = chartObj.instance;
+   var chartType = chartObj.rawData.chartType;
+   var currSym = chartObj.currency || '';
+   var fmtFunc;
+   if (chartType === 'pie_chart') {
+       if(currentLabelMode === 'raw') {
+           fmtFunc = function(p) { return p.name + ': ' + currSym + p.value.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2}) + ' (' + p.percent + '%)'; };
+       } else if(currentLabelMode === 'auto') {
+           fmtFunc = function(p) {
+               var n=p.value; if(n<1000) return p.name+': '+currSym+n.toFixed(0)+' ('+p.percent+'%)';
+               var m=Math.floor(Math.log(Math.abs(n))/Math.log(1000));
+               return p.name+': '+currSym+(n/Math.pow(1000,m)).toFixed(1)+['','K','M','B','T'][m] + ' ('+p.percent+'%)';
+           };
+       } else if (currentLabelMode === 'K') {
+           fmtFunc = function(p) { return p.name+': '+currSym+(p.value/1000).toFixed(1)+'K ('+p.percent+'%)'; };
+       } else if (currentLabelMode === 'M') {
+           fmtFunc = function(p) { return p.name+': '+currSym+(p.value/1000000).toFixed(2)+'M ('+p.percent+'%)'; };
+       }
+   } else {
+       if(currentLabelMode === 'raw') {
+            fmtFunc = function(p) { return currSym + p.value.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2}); };
+       } else if(currentLabelMode === 'auto') {
+            fmtFunc = function(p) { var n=p.value; if(n<1000) return currSym+n.toFixed(0); var m=Math.floor(Math.log(Math.abs(n))/Math.log(1000)); return currSym+(n/Math.pow(1000,m)).toFixed(1)+['','K','M','B','T'][m]; };
+       } else if (currentLabelMode === 'K') {
+            fmtFunc = function(p) { return currSym + (p.value/1000).toFixed(1) + 'K'; };
+       } else if (currentLabelMode === 'M') {
+            fmtFunc = function(p) { return currSym + (p.value/1000000).toFixed(2) + 'M'; };
+       }
+   }
+   var opt = myChart.getOption();
+   if(opt.series) {
+       opt.series.forEach(function(s){
+           s.label = s.label || {};
+           s.label.show = labelsVisible;
+           if(labelsVisible && fmtFunc) s.label.formatter = fmtFunc;
+       });
+       myChart.setOption(opt);
+   }
+}
+function toggleFullScreen(dom) {
+    var card = dom.closest('.grid-stack-item-content') || dom.closest('.full-card');
+    if(card) {
+        card.classList.toggle('fullscreen');
+        var chartInst = echarts.getInstanceByDom(dom);
+        setTimeout(function(){ if(chartInst) chartInst.resize(); }, 100);
+    }
+}
+function renderProChart(domId, data) {
+    var dom = document.getElementById(domId);
+    if(!dom) return;
+    var myChart = echarts.init(dom, null, {renderer: 'canvas'});
+    var cfg = data.config || data.settings || {};
+    var type = data.chartType;
+    var rawSym = cfg.currency || '';
+    var currSym = rawSym;
+    try { if(rawSym.indexOf('\\u') > -1) currSym = JSON.parse('\"' + rawSym + '\"'); } catch(e) { currSym = rawSym; }
+    allCharts[domId] = {instance: myChart, rawData: data, currency: currSym};
+    var numFmt = function(val) {
+        if(typeof val === 'object' && val !== null && val.value !== undefined) val = val.value;
+        if(typeof val !== 'number') return val;
+        if(val < 1000) return currSym + val.toFixed(0);
+        var m = Math.floor(Math.log(val)/Math.log(1000));
+        return currSym + (val/Math.pow(1000,m)).toFixed(1) + ['','K','M','B','T'][m];
+    };
+    var pieFmt = function(params) {
+        var val = parseFloat(params.value); if (isNaN(val)) val = 0;
+        if(val < 1000) return params.name + ': ' + currSym + val.toFixed(0) + ' (' + params.percent + '%)';
+        var m = Math.floor((Math.log(val) / Math.log(1000)));
+        return params.name + ': ' + currSym + (val / Math.pow(1000, m)).toFixed(1) + ['','K','M','B','T'][m] + ' (' + params.percent + '%)';
+    };
+    var headerDiv = document.getElementById(domId.replace('chart_', 'header_'));
+    if(headerDiv && data.title) headerDiv.innerText = data.title;
+    var option = {
+        backgroundColor: 'transparent',
+        legend: { show: true, type: 'scroll', top: 0, padding: [0,0,10,0], itemGap: 10, textStyle: { color: textColor, fontFamily: 'Arial', fontSize: 12 }, pageIconColor: isDark?'#9a60b4':'#2f4554', pageIconInactiveColor: '#aaa' },
+        grid: { left: '5%', right: '12%', top: '60', bottom: '15%', containLabel: true, borderColor: borderColor },
+        toolbox: {
+            show: true, itemSize: 15, right: 15, top: 0, iconStyle: { borderColor: textColor },
+            feature: {
+                myFull: { show: true, title: 'Full Screen', icon: iconFull, onclick: function() { toggleFullScreen(dom); } },
+                myLabelSettings: { show: true, title: 'Label Settings', icon: iconLabel, onclick: function() { openLabelModal(domId); } },
+                mySaveImage: {
+                    show: true, title: 'Save Image', icon: iconImage,
+                    onclick: function() {
+                        var card = dom.parentElement.parentElement;
+                        myChart.setOption({ toolbox: { show: false }, animation: false });
+                        setTimeout(function() {
+                            html2canvas(card, {backgroundColor: containerBg, scale: 2, logging: false}).then(cvs => {
+                                var a = document.createElement('a');
+                                a.href = cvs.toDataURL('image/png');
+                                a.download = (data.title || 'Chart').replace(/\\s+/g, '_') + '.png';
+                                a.click();
+                                myChart.setOption({ toolbox: { show: true }, animation: true });
+                            });
+                        }, 200);
+                    }
+                },
+                dataView: { show: true, title: 'Data View', readOnly: false, backgroundColor: '#fff', textareaColor: '#fff', textareaBorderColor: '#ccc', textColor: '#000' },
+                magicType: { show: true, type: ['line', 'bar', 'stack'], title: { line: 'Line', bar: 'Bar', stack: 'Stack' } }
+            }
+        }
+    };
+    if (type === 'pie_chart') {
+        option.toolbox.feature.magicType = { show: false };
+        option.color = colorsVintage;
+        option.tooltip = { trigger: 'item', textStyle: {fontSize: 14, color: textColor}, backgroundColor: isDark?'rgba(30,30,30,0.9)':'#fff', borderColor: borderColor, borderWidth: 1 };
+        var pieData = data.series[0].data.map((v, i) => ({ value: v, name: data.labels[i] }));
+        option.series = [{
+            type: 'pie', radius: '75%', center: ['50%', '55%'],
+            data: pieData,
+            label: { show: true, color: textColor, fontFamily: 'Inter', formatter: pieFmt },
+            itemStyle: { borderColor: containerBg, borderWidth: 0.1 }
+        }];
+        option.legend.data = data.labels;
+    } else if (type === 'radar_chart') {
+        option.toolbox.feature.magicType = { show: false };
+        option.color = colorsRadar;
+        option.tooltip = { trigger: 'item', textStyle: {fontSize: 14, color: textColor}, backgroundColor: isDark?'rgba(30,30,30,0.9)':'#fff', borderColor: borderColor, borderWidth: 1 };
+        option.legend.data = data.series.map(s => s.name);
+        option.radar = {
+            indicator: data.labels.map(l => ({ name: l })), radius: '75%', shape: 'polygon', startAngle: 90,
+            splitArea: { show: true, areaStyle: { opacity: 0 } },
+            axisName: { color: textColor, fontFamily: 'Inter' },
+            splitLine: { show: true, lineStyle: { color: gridColor } },
+            axisLine: { show: true, lineStyle: { color: borderColor } }
+        };
+        option.series = [{
+            type: 'radar', symbol: 'circle', symbolSize: 4,
+            data: data.series.map((s, i) => ({
+                value: s.data, name: s.name,
+                itemStyle: { color: colorsRadar[i % colorsRadar.length] },
+                lineStyle: { width: 2, color: colorsRadar[i % colorsRadar.length] },
+                areaStyle: { opacity: 0.1, color: colorsRadar[i % colorsRadar.length] },
+                label: { show: false, color: textColor, fontFamily: 'Inter', fontSize: 10, formatter: function(p){ return numFmt(p.value); } }
+            }))
+        }];
+    } else {
+        var lowType = type.toLowerCase();
+        if(lowType.indexOf('bar') > -1 || lowType.indexOf('column') > -1) {
+            option.toolbox.feature.magicType = { show: false };
+        }
+        if(type === 'line_chart' || type === 'area_chart') option.color = isDark ? colorsLineDark : colorsLine;
+        if(type === 'clustered_Bar' || type === 'clustered_Column' || type === 'bar_chart' || type === 'column_chart') option.toolbox.feature.magicType = { show: false };
+        else option.color = isDark ? colorsDark : colorsLight;
+        var axisCat = { type: 'category', data: data.labels, nameLocation: 'end', nameGap: 15, nameTextStyle: {color: textColor, fontWeight: 'bold'}, axisLabel: { color: axisColor, fontFamily: 'Arial', fontWeight: 'bold', fontSize: 12 }, axisLine: { lineStyle: { color: borderColor } } };
+        var axisVal = { type: 'value', nameLocation: 'end', nameGap: 15, nameTextStyle: {color: textColor, fontWeight: 'bold'}, axisLabel: { color: axisColor, fontFamily: 'Arial', fontWeight: 'bold', fontSize: 12 }, axisLine: { show: true, lineStyle: { color: borderColor } }, splitLine: { show: (cfg.showGrid===true), lineStyle: { color: gridColor } } };
+        if (type === 'clustered_Bar') { axisVal.name = cfg.xLabel || 'Value'; axisCat.name = cfg.yLabel || 'Category'; option.xAxis = [axisVal]; option.yAxis = [axisCat]; }
+        else { axisCat.name = cfg.xLabel || 'Category'; axisVal.name = cfg.yLabel || 'Value'; option.xAxis = [axisCat]; option.yAxis = [axisVal]; }
+        if (type === 'line_chart' || type === 'area_chart') { option.dataZoom = [ Object.assign({ type: 'slider', show: true, start: 0, end: 100 }, dataZoomOpts), { type: 'inside', show: true, start: 0, end: 100 } ]; } else { option.dataZoom = [{ type: 'inside', show: true, start: 0, end: 100 }]; }
+        var tt = { show: true, textStyle: {fontSize: 14, color: textColor}, backgroundColor: isDark?'rgba(30,30,30,0.9)':'#fff', borderColor: borderColor, borderWidth: 1 };
+        if(type === 'line_chart' || type === 'area_chart') { tt.trigger = 'item'; tt.axisPointer = { type: 'none' }; } else { tt.trigger = 'item'; tt.triggerOn = 'mousemove|click'; tt.axisPointer = { type: 'line' }; }
+        option.tooltip = tt;
+        option.series = data.series.map(s => {
+            var sObj = { name: s.name, data: s.data, smooth: true, symbol: 'circle', symbolSize: 6 };
+            if(type === 'area_chart') { sObj.type = 'line'; sObj.areaStyle = { opacity: 0.5 }; sObj.lineStyle = { width: 1.5 }; sObj.label = { show: false }; }
+            else if(type === 'line_chart') { sObj.type = 'line'; sObj.lineStyle = { width: 2 }; sObj.label = { show: false }; }
+            else { sObj.type = 'bar'; }
+            if(sObj.type === 'bar') {
+                var pos = (type === 'clustered_Bar') ? 'inside' : 'top';
+                var col = textColor;
+                sObj.label = { show: true, position: pos, fontFamily: 'Inter', fontSize: 10, color: col, formatter: function(p){ return numFmt(p.value); } };
+                sObj.barGap = '20%'; sObj.barCategoryGap = '20%';
+            }
+            return sObj;
+        });
+    }
+    myChart.setOption(option);
+}
+function switchTab(evt, paneId, chartId) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName('tab-pane');
+  for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = 'none'; tabcontent[i].className = tabcontent[i].className.replace(' active', ''); }
+  tablinks = document.getElementsByClassName('tab-btn');
+  for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(' active', ''); }
+  document.getElementById(paneId).style.display = 'block'; 
+  document.getElementById(paneId).className += ' active';
+  evt.currentTarget.className += ' active';
+  setTimeout(function(){ if(allCharts[chartId]) allCharts[chartId].instance.resize(); }, 50);
+}
+renderProChart('chart_0', chartData_0);
+renderProChart('chart_1', chartData_1);
+renderProChart('chart_2', chartData_2);
+renderProChart('chart_3', chartData_3);
+renderProChart('chart_4', chartData_4);
+renderProChart('chart_5', chartData_5);
+window.addEventListener('resize', function() { for(var k in allCharts) allCharts[k].instance.resize(); });
+</script></body></html>
