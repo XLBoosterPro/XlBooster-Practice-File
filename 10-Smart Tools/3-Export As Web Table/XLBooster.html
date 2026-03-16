@@ -1,0 +1,3792 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Sheet1 | Data Export</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://cdn.datatables.net">
+  <link rel="preconnect" href="https://code.jquery.com">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.0/css/buttons.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.8.1/css/searchBuilder.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.5.4/css/dataTables.dateTime.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/searchpanes/2.3.3/css/searchPanes.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/select/2.1.0/css/select.bootstrap5.min.css">
+  <style>
+    /* ===== Base Styles ===== */
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3a0ca3;
+      --accent-color: #4cc9f0;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --border-color: #dee2e6;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    body.dark-mode {
+      --primary-color: #2F80ED;
+      --secondary-color: #0F2A4D;
+      --accent-color: #4cc9f0;
+      --text-primary: #E6ECFF;
+      --text-secondary: #A9B4D0;
+      --bg-primary: #141E3C;
+      --bg-secondary: #0B132B;
+      --border-color: #2A3B6A;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    
+    body {
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      transition: all 0.3s ease;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding-bottom: 2rem;
+    }
+    
+    body.dark-mode::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(47, 128, 237, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(15, 42, 77, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* ===== Main Container ===== */
+    .main-container {
+      padding: 1.5rem;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    /* ===== Dashboard Card ===== */
+    .dashboard-card {
+      background: var(--bg-primary);
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    body.dark-mode .dashboard-card {
+      background-color: var(--bg-primary) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    /* ===== Card Header ===== */
+    .card-header-pro {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 1.25rem 1.5rem;
+      color: white;
+    }
+    
+    body.dark-mode .card-header-pro {
+      background: linear-gradient(180deg, var(--secondary-color) 0%, #0B132B 100%) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+    
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .header-left h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      line-height: 1.2;
+    }
+    
+    body.dark-mode .header-left h1 {
+      color: var(--text-primary) !important;
+    }
+    
+    .subtitle {
+      opacity: 0.85;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.9);
+      margin-top: 0.3rem;
+      font-weight: 400;
+    }
+    
+    body.dark-mode .subtitle {
+      color: var(--text-secondary) !important;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .branding-link {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: all 0.3s;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.6rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .branding-link:hover {
+      color: white;
+      background: rgba(255,255,255,0.2);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+    
+    /* ===== Theme Switch ===== */
+    .theme-switch-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    body.dark-mode .theme-switch-container {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .theme-label {
+      color: rgba(255,255,255,0.95);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    
+    .theme-label .bi-moon-fill { display: inline; }
+    .theme-label .bi-sun-fill { display: none; }
+    body.dark-mode .theme-label .bi-moon-fill { display: none; }
+    body.dark-mode .theme-label .bi-sun-fill { display: inline; }
+    
+    .theme-switch {
+      position: relative;
+      width: 46px;
+      height: 24px;
+    }
+    
+    .theme-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .theme-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 34px;
+      transition: 0.4s;
+    }
+    
+    body.dark-mode .theme-switch input:checked + .theme-slider {
+      background: var(--primary-color);
+    }
+    
+    .theme-slider:before {
+      position: absolute;
+      content: '';
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+    
+    .theme-switch input:checked + .theme-slider {
+      background: rgba(255,255,255,0.5);
+    }
+    
+    .theme-switch input:checked + .theme-slider:before {
+      transform: translateX(22px);
+    }
+    
+    /* ===== Stats Bar (Compact) ===== */
+    .stats-bar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.1);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.2s;
+    }
+    
+    .stat-item:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    body.dark-mode .stats-bar .stat-item {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    .stat-value {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    
+    body.dark-mode .stat-value {
+      color: var(--primary-color) !important;
+    }
+    
+    /* ===== Table Wrapper ===== */
+    .table-wrapper {
+      padding: 0 1.5rem 1.5rem 1.5rem;
+    }
+    
+    .table-scroll-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    
+    #dataTable {
+      font-size: 0.9rem;
+      margin: 0;
+      width: 100% !important;
+    }
+    
+    #dataTable thead th, #dataTable tbody td {
+      white-space: nowrap !important;
+    }
+    
+    #dataTable thead th {
+      background: var(--secondary-color) !important;
+      color: white !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      padding: 0.85rem 1rem;
+      border-bottom: none;
+    }
+    
+    #dataTable tbody td {
+      padding: 0.6rem 1rem;
+      border-color: var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    
+    /* ===== DARK MODE OVERRIDES ===== */
+    /* 1. General Table Colors */
+    body.dark-mode #dataTable {
+      --bs-table-color: #E6ECFF;
+      --bs-table-bg: #0B132B;
+      --bs-table-border-color: #2A3B6A;
+      --bs-table-striped-bg: #141E3C;
+      --bs-table-striped-color: #E6ECFF;
+      --bs-table-active-bg: #1F2D5C;
+      --bs-table-active-color: #E6ECFF;
+      --bs-table-hover-bg: #1F2D5C;
+      --bs-table-hover-color: #E6ECFF;
+      color: #E6ECFF !important;
+      background-color: #0B132B !important;
+    }
+    
+    /* 2. Global Input Fields (Search, Page Length) */
+    body.dark-mode .dataTables_wrapper .dataTables_filter input,
+    body.dark-mode .dataTables_wrapper .dataTables_length select,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid var(--border-color) !important;
+      color: #ffffff !important;
+    }
+    /* Fix for Placeholder Text (Search all columns...) */
+    body.dark-mode input::placeholder { color: rgba(255, 255, 255, 0.7) !important; opacity: 1; }
+    
+    /* 3. Column Header Filters (Specific Fix) */
+    body.dark-mode .filter-box input, body.dark-mode .filter-box select {
+      background-color: rgba(255, 255, 255, 0.12) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      color: #ffffff !important;
+    }
+    body.dark-mode .filter-box input::placeholder { color: rgba(255, 255, 255, 0.6) !important; }
+    
+    /* 4. Pagination (No White Box) */
+    body.dark-mode .page-link {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+    body.dark-mode .page-item.disabled .page-link {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-secondary) !important;
+    }
+    body.dark-mode .page-item.active .page-link {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: white !important;
+    }
+    body.dark-mode .page-link:hover {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: white !important;
+    }
+    
+    /* 5. Table Striping & Hover */
+    body.dark-mode #dataTable tbody tr:nth-of-type(odd) {
+      background-color: rgba(255, 255, 255, 0.03) !important;
+      color: var(--text-primary) !important;
+    }
+    body.dark-mode #dataTable tbody tr:nth-of-type(even) {
+      background-color: #0B132B !important;
+      color: var(--text-primary) !important;
+    }
+    body.dark-mode #dataTable tbody tr:hover {
+      background-color: #1F2D5C !important;
+    }
+    body.dark-mode #dataTable tbody td, body.dark-mode #dataTable tbody th {
+      background-color: transparent !important;
+      color: inherit !important;
+      border-color: var(--border-color) !important;
+    }
+    body.dark-mode table.dataTable.display tbody tr > .sorting_1,
+    body.dark-mode table.dataTable.order-column.stripe tbody tr > .sorting_1,
+    body.dark-mode table.dataTable.stripe tbody tr > .sorting_1 {
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    /* Helper Classes */
+    .text-end { text-align: right !important; }
+    .text-muted { color: var(--text-secondary) !important; }
+    body.dark-mode .text-muted { color: #A9B4D0 !important; }
+    .font-monospace { font-family: 'SFMono-Regular', Consolas, monospace; }
+    
+    /* ===== Footer Bar ===== */
+    .footer-bar {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 1rem 1.5rem;
+    }
+    
+    body.dark-mode .footer-bar {
+      background: var(--secondary-color) !important;
+      border-top: 1px solid var(--border-color) !important;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-text, body.dark-mode .footer-text {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    
+    .powered-by {
+      color: var(--primary-color);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .powered-by:hover {
+      color: var(--secondary-color);
+      text-decoration: underline;
+      transform: translateY(-1px);
+    }
+    
+    body.dark-mode .powered-by {
+      color: var(--primary-color) !important;
+    }
+    
+    /* ===== DataTables Customization & Dark Mode Extensions ===== */
+    .dt-buttons .btn {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+      margin-right: 5px;
+      border-radius: 6px;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .dt-buttons .btn:hover {
+      background: var(--secondary-color);
+      border-color: var(--secondary-color);
+      transform: translateY(-1px);
+    }
+    
+    body.dark-mode .dt-buttons .btn {
+      background: linear-gradient(135deg, var(--secondary-color), var(--bg-secondary)) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    body.dark-mode .dt-buttons .btn:hover {
+      background: linear-gradient(135deg, #1F2D5C, var(--bg-primary)) !important;
+      border-color: var(--primary-color) !important;
+    }
+    
+    /* COLVIS DROPDOWN (Dark Mode) */
+    body.dark-mode div.dt-button-collection {
+      background-color: #0B132B !important;
+      border: 1px solid #2A3B6A !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+    }
+    body.dark-mode div.dt-button-collection .dt-button {
+      background: transparent !important;
+      color: #E6ECFF !important;
+    }
+    body.dark-mode div.dt-button-collection .dt-button.active {
+      background: var(--primary-color) !important;
+      color: white !important;
+    }
+    body.dark-mode div.dt-button-background {
+      background: rgba(0,0,0,0.7) !important;
+    }
+    
+    /* SEARCH BUILDER (Dark Mode) */
+    body.dark-mode .dtsb-searchBuilder, body.dark-mode .dtsb-group, body.dark-mode .dtsb-criteria {
+      background-color: #0B132B !important;
+      color: #E6ECFF !important;
+    }
+    body.dark-mode .dtsb-titleRow {
+      color: #E6ECFF !important;
+    }
+    body.dark-mode .dtsb-input {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid #2A3B6A !important;
+      color: #E6ECFF !important;
+    }
+    body.dark-mode .dtsb-button {
+      background: rgba(255, 255, 255, 0.05) !important;
+      color: #E6ECFF !important;
+      border: 1px solid #2A3B6A !important;
+    }
+    body.dark-mode .dtsb-button:hover {
+      background: var(--primary-color) !important;
+      color: white !important;
+    }
+    
+    /* FIX: COPY DIALOG - Single Color Matches Site Background */
+    body.dark-mode div.dt-button-info {
+      background-color: #0B132B !important;
+      border: 1px solid #2A3B6A !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+      color: #ffffff !important;
+    }
+    body.dark-mode div.dt-button-info h2 {
+      background-color: #0B132B !important;
+      color: #ffffff !important;
+      border-bottom: 1px solid #2A3B6A !important;
+    }
+    body.dark-mode div.dt-button-info div {
+      color: #E6ECFF !important;
+    }
+    
+    /* ===== Scrollbar Styles ===== */
+    body.dark-mode ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    body.dark-mode ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 4px;
+    }
+    body.dark-mode ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    body.dark-mode ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+    
+    /* ===== ROBUST RESPONSIVE DESIGN (Mobile First Approach) ===== */
+    /* Tablet and smaller */
+    @media (max-width: 992px) {
+      .main-container { padding: 1rem; }
+      .header-top { flex-direction: column; gap: 1rem; }
+      .header-left, .header-right { width: 100%; justify-content: space-between; }
+      .header-right { margin-top: 0.5rem; }
+    }
+    
+    /* Mobile Phones */
+    @media (max-width: 768px) {
+      /* Layout Adjustments */
+      .main-container { padding: 0.5rem; }
+      .dashboard-card { border-radius: 12px; }
+      .card-header-pro { padding: 1rem; }
+      .table-wrapper { padding: 0.5rem 0.5rem 1rem 0.5rem; }
+      
+      /* Header Elements */
+      .header-left h1 { font-size: 1.2rem; }
+      .stats-bar { gap: 0.5rem; }
+      .stat-item { padding: 0.3rem 0.6rem; font-size: 0.7rem; }
+      
+      /* DataTables Elements Stacking */
+      .dataTables_wrapper .dt-buttons {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+        white-space: nowrap;
+      }
+      
+      .dataTables_wrapper .dataTables_filter {
+        margin-top: 0.5rem;
+        text-align: left;
+      }
+      
+      .dataTables_wrapper .dataTables_filter input {
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+      
+      /* Pagination Stacking */
+      .dataTables_wrapper .dataTables_paginate {
+        text-align: center !important;
+        margin-top: 1rem !important;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      .dataTables_wrapper .dataTables_info {
+        text-align: center !important;
+        padding-top: 0.5rem !important;
+      }
+      
+      /* Footer Stacking */
+      .footer-content { flex-direction: column; gap: 0.75rem; text-align: center; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="dashboard-card">
+      <div class="card-header-pro">
+        <div class="header-top">
+          <div class="header-left">
+            <h1><i class="bi bi-table"></i> Sheet1</h1>
+            <div class="subtitle">Exported from Sheet1 on February 5, 2026 at 01:10 PM</div>
+          </div>
+          <div class="header-right">
+            <a href="https://xlbooster.com/" target="_blank" class="branding-link"><i class="bi bi-lightning-charge-fill"></i> Made with XLBooster</a>
+            <div class="theme-switch-container">
+              <label for="darkModeToggle" class="theme-label">
+                <i class="bi bi-moon-fill"></i>
+                <i class="bi bi-sun-fill"></i>
+              </label>
+              <label class="theme-switch">
+                <input type="checkbox" id="darkModeToggle" >
+                <span class="theme-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="stats-bar">
+          <div class="stat-item"><i class="bi bi-grid-3x3"></i><span class="stat-value">178</span> Rows</div>
+          <div class="stat-item"><i class="bi bi-layout-three-columns"></i><span class="stat-value">14</span> Columns</div>
+          <div class="stat-item"><i class="bi bi-stars"></i><span class="stat-value">PRO</span> Features</div>
+          <div class="stat-item"><i class="bi bi-calendar"></i><span class="stat-value">5-Feb-2026</span></div>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="table-scroll-container">
+        <table id="dataTable" class="table table-striped table-hover table-bordered" style="width:100%">
+          <thead class="table-dark">
+            <tr>
+              <th>Order_ID</th>
+              <th>Order_Date</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Region</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Customer_Name</th>
+              <th>Order_Type</th>
+              <th>Customer_Age</th>
+              <th>Quantity</th>
+              <th>Price_Per_Unit</th>
+              <th>Total_Amount</th>
+              <th>Return</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ORD0015</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Rohan Krishnan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">56</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">25402</td>
+              <td class="text-end font-monospace">254020</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0228</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Nitya Kara</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">45878</td>
+              <td class="text-end font-monospace">412902</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0276</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Divij Baria</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">59</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">1602</td>
+              <td class="text-end font-monospace">0</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0422</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Kavya Bhatt</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">34</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">49484</td>
+              <td class="text-end font-monospace">197936</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0709</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Tushar Khatri</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">63</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">48937</td>
+              <td class="text-end font-monospace">195748</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0789</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Aarush Viswanathan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">20</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">28690</td>
+              <td class="text-end font-monospace">86070</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0824</td>
+              <td class="text-nowrap">01-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Tanya Saxena</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">16858</td>
+              <td class="text-end font-monospace">84290</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0196</td>
+              <td class="text-nowrap">02-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Raghav Sharma</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">49</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">42399</td>
+              <td class="text-end font-monospace">254394</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0312</td>
+              <td class="text-nowrap">02-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Aarav Lanka</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">39</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">15986</td>
+              <td class="text-end font-monospace">31972</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0811</td>
+              <td class="text-nowrap">02-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Vaibhav Rajagopalan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">15412</td>
+              <td class="text-end font-monospace">123296</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0021</td>
+              <td class="text-nowrap">03-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Aayush Walla</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">59</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">24928</td>
+              <td class="text-end font-monospace">0</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0100</td>
+              <td class="text-nowrap">03-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Riya Ramakrishnan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">33412</td>
+              <td class="text-end font-monospace">33412</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0449</td>
+              <td class="text-nowrap">03-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Veer Cheema</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">65</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">41486</td>
+              <td class="text-end font-monospace">41486</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0519</td>
+              <td class="text-nowrap">03-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Emir Thaker</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">21</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">33407</td>
+              <td class="text-end font-monospace">267256</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0290</td>
+              <td class="text-nowrap">04-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Kaira Halder</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">26</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">18482</td>
+              <td class="text-end font-monospace">129374</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0444</td>
+              <td class="text-nowrap">04-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Fateh Bansal</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">38</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">43357</td>
+              <td class="text-end font-monospace">173428</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0008</td>
+              <td class="text-nowrap">05-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Heer Bahl</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">32</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">32510</td>
+              <td class="text-end font-monospace">162550</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0048</td>
+              <td class="text-nowrap">05-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Kabir Vig</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">55</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">5460</td>
+              <td class="text-end font-monospace">21840</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0067</td>
+              <td class="text-nowrap">05-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Seher Basu</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">46107</td>
+              <td class="text-end font-monospace">138321</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0497</td>
+              <td class="text-nowrap">05-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Nitya Sekhon</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">42</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">21904</td>
+              <td class="text-end font-monospace">87616</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0127</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Zoya Singh</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">28050</td>
+              <td class="text-end font-monospace">224400</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0459</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Zaina Shankar</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">45</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">13375</td>
+              <td class="text-end font-monospace">133750</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0803</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Vihaan Thaker</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">55</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">45637</td>
+              <td class="text-end font-monospace">319459</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0847</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Sana Balan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">56</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">45674</td>
+              <td class="text-end font-monospace">274044</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0887</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Alia Madan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">39</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">1780</td>
+              <td class="text-end font-monospace">17800</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0905</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Dishani Jani</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">34</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">44558</td>
+              <td class="text-end font-monospace">311906</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0931</td>
+              <td class="text-nowrap">06-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Rasha Krishnan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">63</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">17954</td>
+              <td class="text-end font-monospace">71816</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0147</td>
+              <td class="text-nowrap">07-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Oorja Date</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">48</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">5566</td>
+              <td class="text-end font-monospace">44528</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0151</td>
+              <td class="text-nowrap">07-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Shlok Kapadia</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">56</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">30841</td>
+              <td class="text-end font-monospace">246728</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0421</td>
+              <td class="text-nowrap">07-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Ira Chaudhry</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">49</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">7690</td>
+              <td class="text-end font-monospace">76900</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0745</td>
+              <td class="text-nowrap">07-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Kabir Rajagopal</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">51</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">48104</td>
+              <td class="text-end font-monospace">432936</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0930</td>
+              <td class="text-nowrap">07-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Neysa Mannan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">22</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">43833</td>
+              <td class="text-end font-monospace">43833</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0061</td>
+              <td class="text-nowrap">08-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Alia Jayaraman</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">60</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">37708</td>
+              <td class="text-end font-monospace">150832</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0427</td>
+              <td class="text-nowrap">08-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Rasha Ahuja</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">52</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">38316</td>
+              <td class="text-end font-monospace">268212</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0039</td>
+              <td class="text-nowrap">09-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Vihaan Gera</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">61</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">38897</td>
+              <td class="text-end font-monospace">350073</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0590</td>
+              <td class="text-nowrap">09-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Pari Bassi</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">27</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">47687</td>
+              <td class="text-end font-monospace">143061</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0698</td>
+              <td class="text-nowrap">09-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Zaina Bhalla</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">38</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">15700</td>
+              <td class="text-end font-monospace">62800</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0622</td>
+              <td class="text-nowrap">10-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Ivana Acharya</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">54</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">27414</td>
+              <td class="text-end font-monospace">246726</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0961</td>
+              <td class="text-nowrap">10-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Abram Iyer</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">41</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">23102</td>
+              <td class="text-end font-monospace">161714</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0777</td>
+              <td class="text-nowrap">11-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Saira Basu</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">26</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">31164</td>
+              <td class="text-end font-monospace">155820</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0187</td>
+              <td class="text-nowrap">12-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Eva Dhaliwal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">49</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">35936</td>
+              <td class="text-end font-monospace">71872</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0363</td>
+              <td class="text-nowrap">12-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Uthkarsh Chhabra</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">65</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">28942</td>
+              <td class="text-end font-monospace">173652</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0366</td>
+              <td class="text-nowrap">14-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Aayush Talwar</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">46</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">29603</td>
+              <td class="text-end font-monospace">236824</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0810</td>
+              <td class="text-nowrap">14-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Armaan Sem</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">30</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">9473</td>
+              <td class="text-end font-monospace">66311</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0182</td>
+              <td class="text-nowrap">15-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Umang Badami</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">35</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">42458</td>
+              <td class="text-end font-monospace">84916</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0260</td>
+              <td class="text-nowrap">15-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Yuvaan Kaur</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">56</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">36181</td>
+              <td class="text-end font-monospace">36181</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0137</td>
+              <td class="text-nowrap">16-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Rhea Mangat</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">40</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">28723</td>
+              <td class="text-end font-monospace">143615</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0222</td>
+              <td class="text-nowrap">16-Jan-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Pihu Mahal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">61</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">38547</td>
+              <td class="text-end font-monospace">38547</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0681</td>
+              <td class="text-nowrap">16-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Miraya Kade</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">36</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">48935</td>
+              <td class="text-end font-monospace">293610</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0759</td>
+              <td class="text-nowrap">16-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Armaan Rajagopalan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">60</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">40334</td>
+              <td class="text-end font-monospace">121002</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0102</td>
+              <td class="text-nowrap">17-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Siya Boase</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">35</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">14527</td>
+              <td class="text-end font-monospace">145270</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0107</td>
+              <td class="text-nowrap">17-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Mamooty Chakrabarti</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">30</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">8195</td>
+              <td class="text-end font-monospace">32780</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0684</td>
+              <td class="text-nowrap">17-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Sumer Issac</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">17365</td>
+              <td class="text-end font-monospace">52095</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0028</td>
+              <td class="text-nowrap">18-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Kavya Kohli</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">57</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">32619</td>
+              <td class="text-end font-monospace">228333</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0515</td>
+              <td class="text-nowrap">18-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Indrans Tata</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">43</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">27728</td>
+              <td class="text-end font-monospace">55456</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0795</td>
+              <td class="text-nowrap">18-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Zaina Mand</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">16451</td>
+              <td class="text-end font-monospace">82255</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0970</td>
+              <td class="text-nowrap">18-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Rasha Dar</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">48</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">24096</td>
+              <td class="text-end font-monospace">144576</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0336</td>
+              <td class="text-nowrap">19-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Aarush Dhillon</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">64</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">8090</td>
+              <td class="text-end font-monospace">56630</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0666</td>
+              <td class="text-nowrap">20-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Aaina Chandra</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">31</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">34972</td>
+              <td class="text-end font-monospace">244804</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0678</td>
+              <td class="text-nowrap">20-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Baiju Varkey</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">34</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">10303</td>
+              <td class="text-end font-monospace">61818</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0335</td>
+              <td class="text-nowrap">21-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Kartik Shetty</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">32</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">15894</td>
+              <td class="text-end font-monospace">127152</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0727</td>
+              <td class="text-nowrap">21-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Vanya Shere</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">16611</td>
+              <td class="text-end font-monospace">33222</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0347</td>
+              <td class="text-nowrap">22-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Anvi Bassi</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">51</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">46007</td>
+              <td class="text-end font-monospace">92014</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0462</td>
+              <td class="text-nowrap">22-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Anvi Johal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">54</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">3397</td>
+              <td class="text-end font-monospace">27176</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0891</td>
+              <td class="text-nowrap">22-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Samar Viswanathan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">7366</td>
+              <td class="text-end font-monospace">44196</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0716</td>
+              <td class="text-nowrap">23-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Samar Dalal</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">26294</td>
+              <td class="text-end font-monospace">236646</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0071</td>
+              <td class="text-nowrap">25-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Ishita Borra</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">10563</td>
+              <td class="text-end font-monospace">84504</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0092</td>
+              <td class="text-nowrap">25-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Amani Talwar</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">25</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">14543</td>
+              <td class="text-end font-monospace">101801</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0516</td>
+              <td class="text-nowrap">25-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Faiyaz Dutta</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">41</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">7492</td>
+              <td class="text-end font-monospace">59936</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0651</td>
+              <td class="text-nowrap">25-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Ivana Edwin</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">34</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">45266</td>
+              <td class="text-end font-monospace">407394</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0129</td>
+              <td class="text-nowrap">26-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Aaryahi Bir</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">12601</td>
+              <td class="text-end font-monospace">25202</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0855</td>
+              <td class="text-nowrap">26-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Shamik Tak</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">39</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">23413</td>
+              <td class="text-end font-monospace">23413</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0337</td>
+              <td class="text-nowrap">27-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Mohanlal Chandran</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">51</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">43286</td>
+              <td class="text-end font-monospace">389574</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0601</td>
+              <td class="text-nowrap">27-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Sana Dave</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">3382</td>
+              <td class="text-end font-monospace">6764</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0788</td>
+              <td class="text-nowrap">27-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Ryan Shukla</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">63</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">27911</td>
+              <td class="text-end font-monospace">27911</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0238</td>
+              <td class="text-nowrap">28-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Hunar Vasa</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">41605</td>
+              <td class="text-end font-monospace">249630</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0300</td>
+              <td class="text-nowrap">28-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Saira Karan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">50</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">22317</td>
+              <td class="text-end font-monospace">111585</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0563</td>
+              <td class="text-nowrap">28-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Alia Halder</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">50</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">23612</td>
+              <td class="text-end font-monospace">118060</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0899</td>
+              <td class="text-nowrap">28-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Seher Wali</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">26194</td>
+              <td class="text-end font-monospace">157164</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0217</td>
+              <td class="text-nowrap">29-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Suhana Bandi</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">11041</td>
+              <td class="text-end font-monospace">33123</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0303</td>
+              <td class="text-nowrap">29-Jan-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Gokul Batra</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">32486</td>
+              <td class="text-end font-monospace">227402</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0517</td>
+              <td class="text-nowrap">29-Jan-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Dhruv Deo</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">39</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">39729</td>
+              <td class="text-end font-monospace">198645</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0707</td>
+              <td class="text-nowrap">29-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Mamooty Mani</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">37</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">17442</td>
+              <td class="text-end font-monospace">122094</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0169</td>
+              <td class="text-nowrap">30-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Anay Dyal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">33</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">49141</td>
+              <td class="text-end font-monospace">491410</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0220</td>
+              <td class="text-nowrap">30-Jan-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Mishti Bhat</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">35</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">29912</td>
+              <td class="text-end font-monospace">269208</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0358</td>
+              <td class="text-nowrap">30-Jan-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Samarth Bhagat</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">25</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">40835</td>
+              <td class="text-end font-monospace">81670</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0474</td>
+              <td class="text-nowrap">30-Jan-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Parinaaz Hans</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">46</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">48731</td>
+              <td class="text-end font-monospace">341117</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0385</td>
+              <td class="text-nowrap">31-Jan-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Yakshit Deol</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">41</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">9319</td>
+              <td class="text-end font-monospace">18638</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0116</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Anya Das</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">14770</td>
+              <td class="text-end font-monospace">29540</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0133</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Trisha Wadhwa</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">39964</td>
+              <td class="text-end font-monospace">279748</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0140</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Drishya Shenoy</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">42</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">8085</td>
+              <td class="text-end font-monospace">72765</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0547</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Dishani Seth</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">57</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">29460</td>
+              <td class="text-end font-monospace">265140</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0571</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Hrishita Bhat</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">39307</td>
+              <td class="text-end font-monospace">353763</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0710</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Bhamini Sha</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">32</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">34849</td>
+              <td class="text-end font-monospace">34849</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0971</td>
+              <td class="text-nowrap">01-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Kavya Bhandari</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">26074</td>
+              <td class="text-end font-monospace">260740</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0170</td>
+              <td class="text-nowrap">02-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Ryan Chadha</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">36</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">45003</td>
+              <td class="text-end font-monospace">225015</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0390</td>
+              <td class="text-nowrap">02-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Yuvraj  Ahluwalia</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">58</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">35147</td>
+              <td class="text-end font-monospace">246029</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0943</td>
+              <td class="text-nowrap">02-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Tarini Keer</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">24</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">39122</td>
+              <td class="text-end font-monospace">273854</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0877</td>
+              <td class="text-nowrap">03-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Yuvaan Dar</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">55</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">26747</td>
+              <td class="text-end font-monospace">133735</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0440</td>
+              <td class="text-nowrap">04-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Miraya Warrior</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">30293</td>
+              <td class="text-end font-monospace">242344</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0489</td>
+              <td class="text-nowrap">04-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Vanya Rastogi</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">27</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">49123</td>
+              <td class="text-end font-monospace">442107</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0604</td>
+              <td class="text-nowrap">04-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Aarush Chand</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">37</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">16502</td>
+              <td class="text-end font-monospace">132016</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0715</td>
+              <td class="text-nowrap">04-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Mahika Kakar</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">51</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">5071</td>
+              <td class="text-end font-monospace">40568</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0819</td>
+              <td class="text-nowrap">04-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Elakshi Gill</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">26</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">2300</td>
+              <td class="text-end font-monospace">20700</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0177</td>
+              <td class="text-nowrap">05-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Nishith Mannan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">55</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">44877</td>
+              <td class="text-end font-monospace">269262</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0794</td>
+              <td class="text-nowrap">05-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Hridaan Bal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">31</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">3088</td>
+              <td class="text-end font-monospace">3088</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0949</td>
+              <td class="text-nowrap">05-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Mamooty Dyal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">38</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">15764</td>
+              <td class="text-end font-monospace">157640</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0960</td>
+              <td class="text-nowrap">06-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Rati Bumb</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">31</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">45608</td>
+              <td class="text-end font-monospace">319256</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0967</td>
+              <td class="text-nowrap">06-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Indranil Sule</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">65</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">29445</td>
+              <td class="text-end font-monospace">176670</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0998</td>
+              <td class="text-nowrap">06-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Riya Barman</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">51</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">14683</td>
+              <td class="text-end font-monospace">58732</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0267</td>
+              <td class="text-nowrap">07-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Purab Dora</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">40</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">2108</td>
+              <td class="text-end font-monospace">10540</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0816</td>
+              <td class="text-nowrap">07-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Tarini Brahmbhatt</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">58</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">41051</td>
+              <td class="text-end font-monospace">41051</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0186</td>
+              <td class="text-nowrap">08-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Lagan Barman</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">52</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">41971</td>
+              <td class="text-end font-monospace">167884</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0750</td>
+              <td class="text-nowrap">08-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Emir Banerjee</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">28</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">33980</td>
+              <td class="text-end font-monospace">135920</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0881</td>
+              <td class="text-nowrap">08-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Himmat Suresh</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">22</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">16027</td>
+              <td class="text-end font-monospace">80135</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0184</td>
+              <td class="text-nowrap">10-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Jayesh Rana</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">32</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">4367</td>
+              <td class="text-end font-monospace">4367</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0771</td>
+              <td class="text-nowrap">10-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Anika Bir</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">46</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">31948</td>
+              <td class="text-end font-monospace">63896</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0798</td>
+              <td class="text-nowrap">10-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Aaryahi Shanker</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">50</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">11649</td>
+              <td class="text-end font-monospace">46596</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0814</td>
+              <td class="text-nowrap">10-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Saanvi Sawhney</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">58</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">16594</td>
+              <td class="text-end font-monospace">16594</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0496</td>
+              <td class="text-nowrap">11-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Darshit Rajagopal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">34</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">8099</td>
+              <td class="text-end font-monospace">24297</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0953</td>
+              <td class="text-nowrap">11-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Aayush Jhaveri</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">45</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">45648</td>
+              <td class="text-end font-monospace">45648</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0038</td>
+              <td class="text-nowrap">12-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Miraya Dave</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">30932</td>
+              <td class="text-end font-monospace">61864</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0142</td>
+              <td class="text-nowrap">12-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Aniruddh Kakar</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">25</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">33266</td>
+              <td class="text-end font-monospace">133064</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0175</td>
+              <td class="text-nowrap">12-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Uthkarsh Malhotra</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">37</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">30388</td>
+              <td class="text-end font-monospace">91164</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0284</td>
+              <td class="text-nowrap">12-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Ishita Kamdar</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">54</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">28820</td>
+              <td class="text-end font-monospace">230560</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0972</td>
+              <td class="text-nowrap">12-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Yuvaan Yohannan</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">21</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">22929</td>
+              <td class="text-end font-monospace">160503</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0239</td>
+              <td class="text-nowrap">13-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Zaina Garde</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">39</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">47341</td>
+              <td class="text-end font-monospace">189364</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0396</td>
+              <td class="text-nowrap">13-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Veer Walla</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">31</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">43708</td>
+              <td class="text-end font-monospace">131124</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0454</td>
+              <td class="text-nowrap">13-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Anahita Devan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">22307</td>
+              <td class="text-end font-monospace">89228</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0752</td>
+              <td class="text-nowrap">13-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Riaan Khatri</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">22</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">10812</td>
+              <td class="text-end font-monospace">86496</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0784</td>
+              <td class="text-nowrap">13-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Yashvi Khurana</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">61</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">30755</td>
+              <td class="text-end font-monospace">92265</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0348</td>
+              <td class="text-nowrap">14-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Sahil Batta</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">43</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">5313</td>
+              <td class="text-end font-monospace">15939</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0509</td>
+              <td class="text-nowrap">15-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Zoya Sami</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">21</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">32398</td>
+              <td class="text-end font-monospace">129592</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0918</td>
+              <td class="text-nowrap">15-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Indrajit Loyal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">61</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">11156</td>
+              <td class="text-end font-monospace">78092</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0146</td>
+              <td class="text-nowrap">16-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Shamik Keer</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">49</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">3718</td>
+              <td class="text-end font-monospace">7436</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0309</td>
+              <td class="text-nowrap">16-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Raunak Sant</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">23</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">36772</td>
+              <td class="text-end font-monospace">183860</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0428</td>
+              <td class="text-nowrap">16-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Vaibhav Kadakia</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">19</td>
+              <td class="text-end font-monospace">1</td>
+              <td class="text-end font-monospace">16696</td>
+              <td class="text-end font-monospace">16696</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0605</td>
+              <td class="text-nowrap">16-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Rania Varty</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">33</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">9145</td>
+              <td class="text-end font-monospace">27435</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0629</td>
+              <td class="text-nowrap">16-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Bhavin Dave</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">37</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">8944</td>
+              <td class="text-end font-monospace">26832</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0783</td>
+              <td class="text-nowrap">16-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Chirag Garg</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">55</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">30325</td>
+              <td class="text-end font-monospace">272925</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0166</td>
+              <td class="text-nowrap">17-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Dishani Gala</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">50</td>
+              <td class="text-end font-monospace">6</td>
+              <td class="text-end font-monospace">25055</td>
+              <td class="text-end font-monospace">150330</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0704</td>
+              <td class="text-nowrap">17-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Tejas Devi</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">54</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">26986</td>
+              <td class="text-end font-monospace">107944</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0001</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Mehul Madan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">29</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">33207</td>
+              <td class="text-end font-monospace">298863</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0049</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Nirvi Tata</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">33</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">15961</td>
+              <td class="text-end font-monospace">127688</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0080</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Adira Dugar</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">38</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">7667</td>
+              <td class="text-end font-monospace">30668</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0431</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Ela Swaminathan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">40</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">18247</td>
+              <td class="text-end font-monospace">91235</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0614</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Ishita Kapadia</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">54</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">20178</td>
+              <td class="text-end font-monospace">201780</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0880</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Amani Deo</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">34</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">29785</td>
+              <td class="text-end font-monospace">208495</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0956</td>
+              <td class="text-nowrap">18-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Vidur Gola</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">44</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">1560</td>
+              <td class="text-end font-monospace">7800</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0608</td>
+              <td class="text-nowrap">19-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Aaryahi Kade</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">46</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">37055</td>
+              <td class="text-end font-monospace">148220</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0192</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Priyansh Agrawal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">19</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">35158</td>
+              <td class="text-end font-monospace">175790</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0210</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Elakshi Karan</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">58</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">15001</td>
+              <td class="text-end font-monospace">45003</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0254</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Indranil Ray</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">19590</td>
+              <td class="text-end font-monospace">156720</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0274</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Tiya Sodhi</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">31</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">12633</td>
+              <td class="text-end font-monospace">25266</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0308</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Vritika Dhillon</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">61</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">24081</td>
+              <td class="text-end font-monospace">120405</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0553</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Indrajit Chokshi</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">40</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">22388</td>
+              <td class="text-end font-monospace">223880</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0597</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Riaan Goyal</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">59</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">6420</td>
+              <td class="text-end font-monospace">32100</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0786</td>
+              <td class="text-nowrap">20-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Vanya Chatterjee</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">22</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">34956</td>
+              <td class="text-end font-monospace">349560</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0286</td>
+              <td class="text-nowrap">21-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Anvi Kalita</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">54</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">31302</td>
+              <td class="text-end font-monospace">125208</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0679</td>
+              <td class="text-nowrap">21-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Lakshit Seshadri</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">31</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">26001</td>
+              <td class="text-end font-monospace">234009</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0846</td>
+              <td class="text-nowrap">21-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Ira Khanna</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">19</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">24353</td>
+              <td class="text-end font-monospace">73059</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0999</td>
+              <td class="text-nowrap">21-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Zaina Soman</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">22</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">28844</td>
+              <td class="text-end font-monospace">230752</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0242</td>
+              <td class="text-nowrap">22-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Indrans Kanda</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">28</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">23574</td>
+              <td class="text-end font-monospace">117870</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0757</td>
+              <td class="text-nowrap">22-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Jhanvi Sen</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">32</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">46924</td>
+              <td class="text-end font-monospace">328468</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0094</td>
+              <td class="text-nowrap">23-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Saksham Bala</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">58</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">44062</td>
+              <td class="text-end font-monospace">132186</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0202</td>
+              <td class="text-nowrap">23-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Bangalore</td>
+              <td>Karnataka</td>
+              <td>Aaryahi Gour</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">56</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">26343</td>
+              <td class="text-end font-monospace">237087</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0827</td>
+              <td class="text-nowrap">23-Feb-2024</td>
+              <td>Laptop</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Ahmedabad</td>
+              <td>Gujarat</td>
+              <td>Raghav Srivastava</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">21</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">31002</td>
+              <td class="text-end font-monospace">124008</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0906</td>
+              <td class="text-nowrap">23-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>East</td>
+              <td>Kolkata</td>
+              <td>West Bengal</td>
+              <td>Kaira Cheema</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">47</td>
+              <td class="text-end font-monospace">9</td>
+              <td class="text-end font-monospace">44222</td>
+              <td class="text-end font-monospace">397998</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0115</td>
+              <td class="text-nowrap">24-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Mumbai</td>
+              <td>Maharashtra</td>
+              <td>Madhup Lal</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">18</td>
+              <td class="text-end font-monospace">10</td>
+              <td class="text-end font-monospace">24382</td>
+              <td class="text-end font-monospace">243820</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0162</td>
+              <td class="text-nowrap">24-Feb-2024</td>
+              <td>Tablet</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Anika Raj</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">18</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">48710</td>
+              <td class="text-end font-monospace">146130</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0976</td>
+              <td class="text-nowrap">24-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Nakul Chokshi</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">26</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">45379</td>
+              <td class="text-end font-monospace">181516</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0581</td>
+              <td class="text-nowrap">25-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Jaipur</td>
+              <td>Rajasthan</td>
+              <td>Yakshit Sem</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">28</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">43472</td>
+              <td class="text-end font-monospace">347776</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>ORD0754</td>
+              <td class="text-nowrap">25-Feb-2024</td>
+              <td>TV</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Chennai</td>
+              <td>Tamil Nadu</td>
+              <td>Indranil Kata</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">37</td>
+              <td class="text-end font-monospace">3</td>
+              <td class="text-end font-monospace">5221</td>
+              <td class="text-end font-monospace">15663</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0935</td>
+              <td class="text-nowrap">25-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Delhi</td>
+              <td>Delhi</td>
+              <td>Tiya Thaman</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">63</td>
+              <td class="text-end font-monospace">4</td>
+              <td class="text-end font-monospace">27412</td>
+              <td class="text-end font-monospace">109648</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0219</td>
+              <td class="text-nowrap">27-Feb-2024</td>
+              <td>Camera</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Tara Chakrabarti</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">55</td>
+              <td class="text-end font-monospace">2</td>
+              <td class="text-end font-monospace">36110</td>
+              <td class="text-end font-monospace">72220</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0414</td>
+              <td class="text-nowrap">28-Feb-2024</td>
+              <td>Mobile</td>
+              <td>Electronics</td>
+              <td>South</td>
+              <td>Hyderabad</td>
+              <td>Telangana</td>
+              <td>Neelofar Varkey</td>
+              <td>COD</td>
+              <td class="text-end font-monospace">46</td>
+              <td class="text-end font-monospace">5</td>
+              <td class="text-end font-monospace">48096</td>
+              <td class="text-end font-monospace">240480</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0476</td>
+              <td class="text-nowrap">28-Feb-2024</td>
+              <td>Smartwatch</td>
+              <td>Electronics</td>
+              <td>North</td>
+              <td>Lucknow</td>
+              <td>Uttar Pradesh</td>
+              <td>Riaan Roy</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">48</td>
+              <td class="text-end font-monospace">7</td>
+              <td class="text-end font-monospace">16782</td>
+              <td class="text-end font-monospace">117474</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>ORD0578</td>
+              <td class="text-nowrap">28-Feb-2024</td>
+              <td>Headphones</td>
+              <td>Electronics</td>
+              <td>West</td>
+              <td>Pune</td>
+              <td>Maharashtra</td>
+              <td>Mannat Aurora</td>
+              <td>Prepaid</td>
+              <td class="text-end font-monospace">19</td>
+              <td class="text-end font-monospace">8</td>
+              <td class="text-end font-monospace">10053</td>
+              <td class="text-end font-monospace">80424</td>
+              <td>No</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <div class="footer-content">
+          <div class="footer-left">
+            <span class="footer-text">Data exported from Microsoft Excel</span>
+          </div>
+          <div class="footer-right">
+            <a href="https://xlbooster.com/" target="_blank" class="powered-by"><i class="bi bi-lightning-charge-fill"></i> Made with XLBooster</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.bootstrap5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.print.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.colVis.min.js"></script>
+  <script src="https://cdn.datatables.net/searchbuilder/1.8.1/js/dataTables.searchBuilder.min.js"></script>
+  <script src="https://cdn.datatables.net/searchbuilder/1.8.1/js/searchBuilder.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/datetime/1.5.4/js/dataTables.dateTime.min.js"></script>
+  <script src="https://cdn.datatables.net/searchpanes/2.3.3/js/dataTables.searchPanes.min.js"></script>
+  <script src="https://cdn.datatables.net/searchpanes/2.3.3/js/searchPanes.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/select/2.1.0/js/dataTables.select.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Initialize DataTable with advanced features
+      const table = $('#dataTable').DataTable({
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
+        stateSave: true,
+        responsive: false,
+        select: {
+          style: 'os',
+          items: 'row',
+          className: 'selected'
+        },
+        orderCellsTop: true,
+        dom: 'Bfrtip',
+        buttons: [
+          {
+            extend: 'copy',
+            className: 'btn btn-sm btn-primary',
+            text: '<i class="bi bi-clipboard"></i> Copy',
+            exportOptions: { columns: ':visible' },
+            title: ''
+          },
+          {
+            extend: 'csv',
+            className: 'btn btn-sm btn-primary',
+            text: '<i class="bi bi-filetype-csv"></i> CSV',
+            exportOptions: { columns: ':visible' },
+            title: ''
+          },
+          {
+            extend: 'excel',
+            className: 'btn btn-sm btn-primary',
+            text: '<i class="bi bi-file-earmark-excel"></i> Excel',
+            exportOptions: { columns: ':visible' },
+            title: ''
+          },
+          {
+            extend: 'pdfHtml5',
+            className: 'btn btn-sm btn-primary',
+            text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
+            exportOptions: { columns: ':visible' },
+            title: '',
+            customize: function(doc) {
+              // DYNAMIC ORIENTATION BASED ON VISIBLE COLUMNS
+              var visibleColumnCount = table.columns(':visible').count();
+              
+              if (visibleColumnCount <= 8) {
+                doc.pageOrientation = 'portrait';
+                doc.pageSize = 'A4';
+                doc.defaultStyle.fontSize = 9;
+                doc.styles.tableHeader.fontSize = 10;
+              } else {
+                doc.pageOrientation = 'landscape';
+                doc.pageSize = 'A3';
+                doc.defaultStyle.fontSize = 8;
+                doc.styles.tableHeader.fontSize = 9;
+              }
+              
+              doc.pageMargins = [15, 15, 15, 15];
+              
+              // Find the table safely instead of hardcoding index
+              var tableNode;
+              if (doc.content) {
+                for (var i = 0; i < doc.content.length; i++) {
+                  if (doc.content[i].table) {
+                    tableNode = doc.content[i].table;
+                    break;
+                  }
+                }
+              }
+              
+              // If table found, set width to auto-fit
+              if (tableNode) {
+                var colLen = tableNode.body[0].length;
+                tableNode.widths = Array(colLen).fill('*');
+              }
+              
+              // Add timestamp to footer
+              var now = new Date();
+              var dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+              var timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+              
+              doc['footer'] = function(currentPage, pageCount) {
+                return [
+                  {
+                    text: 'Page ' + currentPage.toString() + ' of ' + pageCount,
+                    alignment: 'center',
+                    fontSize: 8,
+                    margin: [0, 10, 0, 0]
+                  },
+                  {
+                    text: 'Exported on ' + dateStr + ' at ' + timeStr,
+                    alignment: 'center',
+                    fontSize: 8,
+                    margin: [0, 0, 0, 10]
+                  }
+                ];
+              };
+            }
+          },
+          {
+            extend: 'print',
+            className: 'btn btn-sm btn-primary',
+            text: '<i class="bi bi-printer"></i> Print',
+            exportOptions: { columns: ':visible' },
+            title: '',
+            autoPrint: true,
+            customize: function(win) {
+              // DYNAMIC ORIENTATION FOR PRINT
+              var visibleColumnCount = table.columns(':visible').count();
+              
+              $(win.document.body).css('font-size', visibleColumnCount <= 8 ? '10pt' : '9pt');
+              $(win.document.body).find('table').addClass('compact').css('font-size', 'inherit');
+              var orientation = visibleColumnCount <= 8 ? 'portrait' : 'landscape';
+              var css = '@page { size: ' + orientation + '; }',
+                  head = win.document.head || win.document.getElementsByTagName('head')[0],
+                  style = win.document.createElement('style');
+              style.type = 'text/css';
+              style.media = 'print';
+              if (style.styleSheet) { style.styleSheet.cssText = css; }
+              else { style.appendChild(win.document.createTextNode(css)); }
+              head.appendChild(style);
+            }
+          },
+          {
+            extend: 'colvis',
+            className: 'btn btn-sm btn-secondary',
+            text: '<i class="bi bi-eye"></i> Columns'
+          },
+          {
+            extend: 'searchBuilder',
+            className: 'btn btn-sm btn-success',
+            text: '<i class="bi bi-funnel"></i> Advanced Filter'
+          }
+        ],
+        language: {
+          search: '<i class="bi bi-search"></i>',
+          searchPlaceholder: 'Search all columns...',
+          lengthMenu: 'Show _MENU_',
+          info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+          infoFiltered: '(filtered from _MAX_)',
+          infoEmpty: 'No entries to show',
+          zeroRecords: 'No matching records found',
+          paginate: { 
+            first: '<i class="bi bi-chevron-double-left"></i>',
+            previous: '<i class="bi bi-chevron-left"></i>',
+            next: '<i class="bi bi-chevron-right"></i>',
+            last: '<i class="bi bi-chevron-double-right"></i>'
+          },
+          select: { rows: { _: '%d rows selected', 0: '', 1: '1 row selected' } }
+        },
+        initComplete: function() {
+          // Add custom search input for each column
+          this.api().columns().every(function(idx) {
+            var column = this;
+            var title = $(column.header()).text();
+            var searchDiv = $('<div class="mt-2 filter-box" style="font-weight:normal;"></div>');
+            searchDiv.on('click', function(e) { e.stopPropagation(); });
+            
+            var data = column.data().toArray();
+            var hasDates = data.some(function(val) {
+              return val && typeof val === 'string' && /\\d{4}[\\-\\/]\\d{2}[\\-\\/]\\d{2}/.test(val);
+            });
+            
+            if (hasDates) {
+              searchDiv.append('<input type="date" class="form-control form-control-sm mb-1" placeholder="From">');
+              searchDiv.append('<input type="date" class="form-control form-control-sm" placeholder="To">');
+              searchDiv.find('input').on('change', function() {
+                var from = searchDiv.find('input').eq(0).val();
+                var to = searchDiv.find('input').eq(1).val();
+                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                  var date = data[idx];
+                  if (!date) return true;
+                  if (from && date < from) return false;
+                  if (to && date > to) return false;
+                  return true;
+                });
+                table.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+            } else {
+              searchDiv.append('<input type="text" class="form-control form-control-sm" placeholder="Filter" style="width:100%">');
+              searchDiv.find('input').on('keyup change', function() {
+                column.search(this.value).draw();
+              });
+            }
+            $(column.header()).append(searchDiv);
+          });
+        }
+      });
+      
+      $('<style>').text(`
+         table.dataTable tbody tr.selected { background-color: rgba(67, 97, 238, 0.2) !important; }
+         table.dataTable thead > tr > th.sorting:before,
+         table.dataTable thead > tr > th.sorting:after,
+         table.dataTable thead > tr > th.sorting_asc:before,
+         table.dataTable thead > tr > th.sorting_asc:after,
+         table.dataTable thead > tr > th.sorting_desc:before,
+         table.dataTable thead > tr > th.sorting_desc:after {
+             top: 12px !important; right: 10px !important; font-size: 1.2em !important;
+         }
+         table.dataTable thead th {
+             vertical-align: top !important; padding-right: 25px !important;
+         }
+      `).appendTo('head');
+      
+      const updateDataTablesTheme = () => {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        const tableElement = document.querySelector('#dataTable');
+        if (tableElement) { const dataTable = $(tableElement).DataTable(); if (dataTable) dataTable.draw(); }
+      };
+      const observer = new MutationObserver(updateDataTablesTheme);
+      observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    });
+
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const updateThemeIcon = () => {
+        const moonIcon = document.querySelector('.bi-moon-fill');
+        const sunIcon = document.querySelector('.bi-sun-fill');
+        if (document.body.classList.contains('dark-mode')) {
+          moonIcon.style.display = 'none'; sunIcon.style.display = 'inline';
+        } else {
+          moonIcon.style.display = 'inline'; sunIcon.style.display = 'none';
+        }
+      };
+      if (darkModeToggle) {
+        updateThemeIcon();
+        darkModeToggle.addEventListener('change', function() {
+          document.body.classList.toggle('dark-mode', this.checked);
+          localStorage.setItem('darkMode', this.checked);
+          updateThemeIcon();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
