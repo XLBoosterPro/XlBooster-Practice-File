@@ -1,0 +1,1 @@
+{"chartName":"Chart","chartType":"pie_chart","title":"Department Budget Allocation","settings":{"colorTheme":"light","currency":"$","legendPos":"center top","fontFamily":"Arial"},"labels":["Marketing","IT Services","Production","Logistics","Admin Support"],"series":[{"name":"Budget","data":[13500,6500,59000,3700,2600]}]}
